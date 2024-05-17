@@ -1,110 +1,87 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart';
 
-
-// 桌面端不支持，视频代码待学习
-
-void main() => runApp(const VideoPlayerApp());
-
-class VideoPlayerApp extends StatelessWidget {
-  const VideoPlayerApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      title: 'Video Player Demo',
-      home: VideoPlayerScreen(),
-    );
-  }
+void main() {
+  runApp(const MaterialApp(
+    title: 'Returing Data',
+    home: HomeScreen(),
+  ));
 }
 
-class VideoPlayerScreen extends StatefulWidget {
-  const VideoPlayerScreen({super.key});
-
-  @override
-  State<VideoPlayerScreen> createState() => _VideoPlayerScreenState();
-}
-
-class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
-  late VideoPlayerController _controller;
-  late Future<void> _initializeVideoPlayerFuture;
-
-  @override
-  void initState() {
-    super.initState();
-
-    // Create and store the VideoPlayerController. The VideoPlayerController
-    // offers several different constructors to play videos from assets, files,
-    // or the internet.
-    _controller = VideoPlayerController.networkUrl(
-      Uri.parse(
-        'https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4',
-      ),
-    );
-
-    // Initialize the controller and store the Future for later use.
-    _initializeVideoPlayerFuture = _controller.initialize();
-
-    // Use the controller to loop the video.
-    _controller.setLooping(true);
-  }
-
-  @override
-  void dispose() {
-    // Ensure disposing of the VideoPlayerController to free up resources.
-    _controller.dispose();
-
-    super.dispose();
-  }
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Butterfly Video'),
+        title: const Text('Returing Data Demo'),
       ),
-      // Use a FutureBuilder to display a loading spinner while waiting for the
-      // VideoPlayerController to finish initializing.
-      body: FutureBuilder(
-        future: _initializeVideoPlayerFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            // If the VideoPlayerController has finished initialization, use
-            // the data it provides to limit the aspect ratio of the video.
-            return AspectRatio(
-              aspectRatio: _controller.value.aspectRatio,
-              // Use the VideoPlayer widget to display the video.
-              child: VideoPlayer(_controller),
-            );
-          } else {
-            // If the VideoPlayerController is still initializing, show a
-            // loading spinner.
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-        },
+      body: const Center(
+        child: SelectionButton(),
       ),
-      floatingActionButton: FloatingActionButton(
+    );
+  }
+}
+
+class SelectionButton extends StatefulWidget {
+  const SelectionButton({super.key});
+
+  @override
+  State<SelectionButton> createState() => _SelectionButtonState();
+}
+
+class _SelectionButtonState extends State<SelectionButton> {
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
         onPressed: () {
-          // Wrap the play or pause in a call to `setState`. This ensures the
-          // correct icon is shown.
-          setState(() {
-            // If the video is playing, pause it.
-            if (_controller.value.isPlaying) {
-              _controller.pause();
-            } else {
-              // If the video is paused, play it.
-              _controller.play();
-            }
-          });
+          _navigateAndDisplaySelection(context);
         },
-        // Display the correct icon depending on the state of the player.
-        child: Icon(
-          _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
-        ),
-      ),
+        child: const Text('Pick an option, any option!'));
+  }
+
+  Future<void> _navigateAndDisplaySelection(BuildContext context) async {
+    final result =
+        await Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return const SelectionScreen();
+    }));
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context)
+      ..removeCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text('$result')));
+  }
+}
+
+class SelectionScreen extends StatelessWidget {
+  const SelectionScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Pick an option')),
+      body: Center(
+          child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context, 'Yep');
+                },
+                child: const Text("Yep!")),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context, 'Nope');
+              },
+              child: const Text('Nope'),
+            ),
+          )
+        ],
+      )),
     );
   }
 }

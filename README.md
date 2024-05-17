@@ -1,16 +1,17 @@
-# hookdemo
+# Flutter Book
 
-A new Flutter project.
+## 下载并配置fvm
+```
+dart pub global activate fvm
+```
 
-## Getting Started
+## 使用fvm
++ fvm install <版本号>：安装指定版本的Flutter。
++ fvm use <版本号>：设置当前项目的Flutter版本。
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 在项目的 pubspec.yaml 文件中指定 Flutter 版本
+```
+fvm:
+  sdk:
+    version: ^<version>
+```
